@@ -4,13 +4,17 @@ import (
 	"fmt"
 )
 
-
+// null 0,  user1:○ = 1　user2: ● = 2
 type Board struct {
-	
+	tokens [15 * 15]int
 }
 
 func (b *Board) InitialBoard() {
-	
+	var i int
+
+	for i = 0; i < 15*15; i++ {
+		b.tokens[i] = 0
+	}
 }
 
 func (b *Board) putPiece(x, y, userType int) int {
@@ -35,5 +39,5 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 }
 
 func main() {
-	
+
 }
