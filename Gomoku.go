@@ -38,10 +38,25 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 	}
 }
 
-func banprint(ban [][]int) int{
-    for i:=0;i<len(ban);i++{
-        for j:=0;j<len(ban[0]);j++{
-            switch ban[i][j]{
+func (b *Board) boardprint() int {
+    for i := 0; i < 15; i++ {
+        for j := 0; j < 15; j++ {
+            switch b.tokens[i*15+j] {
+            case 0:
+                fmt.Printf(" . ")
+            case 1:
+                fmt.Printf(" ○ ")
+            case 2:
+                fmt.Printf(" ● ")
+            default:
+                fmt.Println("Error:Unexpected Token")
+                return 1
+            }
+        }
+        fmt.Println("")
+    }
+    return 0
+}
                 case 0:
                     fmt.Printf(" . ")
                 case 1:
