@@ -39,5 +39,29 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 }
 
 func main() {
+	var b Board
+	b.InitialBoard()
+	b.putPiece(0, 0, 1)
+	b.putPiece(0, 1, 2)
 
+	var temp int
+	temp = b.returnPieceTypeByPosition(0, 0)
+	if temp == 0 {
+		fmt.Println(".")
+	} else if temp == 1 {
+		fmt.Println("○")
+	} else if temp == 2 {
+		fmt.Println("●")
+	}
+
+	temp = b.returnPieceTypeByPosition(0, 1)
+	if temp == 0 {
+		fmt.Println(".")
+	} else if temp == 1 {
+		fmt.Println("○")
+	} else if temp == 2 {
+		fmt.Println("●")
+	}
+
+	b.boardprint()
 }
