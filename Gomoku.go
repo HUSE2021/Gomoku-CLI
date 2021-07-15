@@ -172,23 +172,25 @@ func checkNotOverFlow(x, y int) bool {
 	}
 }
 
-var nowUser int
-
-func changeUser() {
-	if nowUser == 1 {
-		nowUser++
+func changeUser(nowUser *int) {
+	if *nowUser == 1 {
+		*nowUser++
 	} else {
-		nowUser--
+		*nowUser--
 	}
 }
 
 func main() {
 	var b Board
 	var x, y int
+	var nowUser int
+
+	//Initial Game
 	b.InitialBoard()
-	fmt.Println("======  Game Start ======")
 	nowUser = 1
-	fmt.Println("======  Black First ======")
+	fmt.Println("	    ======  Game Start  ======")
+	fmt.Println("	    ======  Black First ======")
+	b.boardprint()
 	fmt.Printf("user: %d  plz input :", nowUser)
 	for {
 		_, err := fmt.Scan(&x, &y)
@@ -199,10 +201,10 @@ func main() {
 			fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
 			b.boardprint()
 			if haveWinner == true {
-				fmt.Printf("winner is : %d", nowUser)
+				fmt.Printf("winner is : %d\n", nowUser)
 				return
 			}
-			changeUser()
+			changeUser(&nowUser)
 		} else {
 			fmt.Printf("bad input ,again\n")
 		}
