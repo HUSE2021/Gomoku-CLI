@@ -17,9 +17,14 @@ func (b *Board) InitialBoard() {
 	}
 }
 
+var haveWinner bool = false
+
 func (b *Board) putPiece(x, y, userType int) int {
 	if b.tokens[x*15+y] == 0 {
 		b.tokens[x*15+y] = userType
+		if b.check5Piece(x,y,userType){
+			haveWinner=true
+		}
 		return 200 //200 is ok, 500 is not ok
 	} else {
 		return 500
@@ -57,31 +62,138 @@ func (b *Board) boardprint() int {
     }
     return 0
 }
+
+func (b *Board) check5Piece (x,y,userType int) (bool) {
+	xcount,ycount,zcount:=0,0,0
+	x2,y2 := x,y
+
+	for i:=0; i<15; i++{
+		//"-"
+		if xcount==5{
+			return true
+		}
+		if b.tokens[x*15+i] == userType{
+
+			xcount++
+		}else{
+			xcount=0
+		}
+		//"|"
+		if ycount==5{
+			return true
+		}
+		if b.tokens[i*15+y] == userType{
+			ycount++
+		}else{
+			ycount=0
+		}
+	}
+	// "/"
+	for x2>0 && y2<15{
+		x2--
+		y2++
+	}
+	for x2<15 && y2>0{
+		if zcount==5{
+			return true
+		}
+		if b.tokens[x2*15+y2] == userType{
+			zcount++
+		}else{
+			zcount=0
+		}
+		x2++
+		y2--
+	}
+	zcount=0
+	// "\"
+	for x>0 && y>0{
+		x--
+		y--
+	}
+	for x<15 && y<15{
+		if zcount==5{
+			return true
+		}
+		if b.tokens[x*15+y] == userType{
+			zcount++
+		}else{
+			zcount=0
+		}
+		x++
+		y++
+	}
+	return false
+}
+
+//func startXY1(x,y int)(i,j int) {
+//	if x>y{
+//		i=0
+//		j=x-y
+//	}else {
+//		i=j-i
+//		j=0
+//	}
+//	return i,j
+//}
+//func startXY2(x,y int)(i,j int) {
+//	if x>y{
+//		i=x+y
+//		j=15
+//	}else {
+//		i=j-i
+//		j=0
+//	}
+//	return i,j
+//}
+
+
+//func (b *Board) checkOverFlow (x,y int) (bool) {
+//	if x>=0 && x<14 && y>=0 && y<15{
+//		return true
+//	}else{
+//		return false
+//	}
+//}
                
 func main() {
 	var b Board
 	b.InitialBoard()
-	b.putPiece(0, 0, 1)
-	b.putPiece(0, 1, 2)
-
-	var temp int
-	temp = b.returnPieceTypeByPosition(0, 0)
-	if temp == 0 {
-		fmt.Println(".")
-	} else if temp == 1 {
-		fmt.Println("○")
-	} else if temp == 2 {
-		fmt.Println("●")
-	}
-
-	temp = b.returnPieceTypeByPosition(0, 1)
-	if temp == 0 {
-		fmt.Println(".")
-	} else if temp == 1 {
-		fmt.Println("○")
-	} else if temp == 2 {
-		fmt.Println("●")
-	}
-
+	b.putPiece(1, 2, 1)
+	b.putPiece(2, 3, 1)
+	b.putPiece(3, 4, 1)
+	b.putPiece(4, 5, 1)
+	b.putPiece(4, 2, 2)
+	b.putPiece(3, 3, 2)
+	b.putPiece(2, 4, 2)
+	b.putPiece(1, 5, 2)
+	b.putPiece(0, 6, 2)
+	b.putPiece(10, 6, 2)
+	b.putPiece(2, 14, 2)
 	b.boardprint()
+	if haveWinner{
+		fmt.Printf("ok")
+	}else{
+		fmt.Printf("NO")
+	}
+
+	//var temp int
+	//temp = b.returnPieceTypeByPosition(0, 0)
+	//if temp == 0 {
+	//	fmt.Println(".")
+	//} else if temp == 1 {
+	//	fmt.Println("○")
+	//} else if temp == 2 {
+	//	fmt.Println("●")
+	//}
+	//
+	//temp = b.returnPieceTypeByPosition(0, 1)
+	//if temp == 0 {
+	//	fmt.Println(".")
+	//} else if temp == 1 {
+	//	fmt.Println("○")
+	//} else if temp == 2 {
+	//	fmt.Println("●")
+	//}
+
 }
