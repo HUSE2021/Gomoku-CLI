@@ -20,25 +20,25 @@ func (b *Board) InitialBoard() {
 	}
 }
 
-
-
 func (b *Board) putPiece(x, y, userType int) bool {
-	if checkNotOverFlow(x,y)==true{
+	if checkNotOverFlow(x, y) == true {
 		if b.tokens[x*15+y] == 0 {
 			b.tokens[x*15+y] = userType
-			if b.check5Piece(x,y,userType){
-				haveWinner=true
+			if b.check5Piece(x, y, userType) {
+				haveWinner = true
 			}
 			return true //200 is ok, 500 is not ok
 		} else {
 			return false
 		}
-	}else {return false}
+	} else {
+		return false
+	}
 
 }
 
 func (b *Board) returnPieceTypeByPosition(x, y int) int {
-	if checkNotOverFlow(x,y)==true{
+	if checkNotOverFlow(x, y) == true {
 		if b.tokens[x*15+y] != 0 {
 			if b.tokens[x*15+y] == 1 {
 				return 1
@@ -48,12 +48,11 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 		} else {
 			return 0
 		}
-	}else{
+	} else {
 		return 0
 	}
 
 }
-
 
 func (b *Board) boardprint() int {
 	fmt.Println("    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14")
@@ -81,62 +80,62 @@ func (b *Board) boardprint() int {
 	return 0
 }
 
-func (b *Board) check5Piece (x,y,userType int) (bool) {
-	xcount,ycount,zcount:=0,0,0
-	x2,y2 := x,y
+func (b *Board) check5Piece(x, y, userType int) bool {
+	xcount, ycount, zcount := 0, 0, 0
+	x2, y2 := x, y
 
-	for i:=0; i<15; i++{
+	for i := 0; i < 15; i++ {
 		//"-"
-		if xcount==5{
+		if xcount == 5 {
 			return true
 		}
-		if b.tokens[x*15+i] == userType{
+		if b.tokens[x*15+i] == userType {
 
 			xcount++
-		}else{
-			xcount=0
+		} else {
+			xcount = 0
 		}
 		//"|"
-		if ycount==5{
+		if ycount == 5 {
 			return true
 		}
-		if b.tokens[i*15+y] == userType{
+		if b.tokens[i*15+y] == userType {
 			ycount++
-		}else{
-			ycount=0
+		} else {
+			ycount = 0
 		}
 	}
 	// "/"
-	for x2>0 && y2<15{
+	for x2 > 0 && y2 < 15 {
 		x2--
 		y2++
 	}
-	for x2<15 && y2>0{
-		if zcount==5{
+	for x2 < 15 && y2 > 0 {
+		if zcount == 5 {
 			return true
 		}
-		if b.tokens[x2*15+y2] == userType{
+		if b.tokens[x2*15+y2] == userType {
 			zcount++
-		}else{
-			zcount=0
+		} else {
+			zcount = 0
 		}
 		x2++
 		y2--
 	}
-	zcount=0
+	zcount = 0
 	// "\"
-	for x>0 && y>0{
+	for x > 0 && y > 0 {
 		x--
 		y--
 	}
-	for x<15 && y<15{
-		if zcount==5{
+	for x < 15 && y < 15 {
+		if zcount == 5 {
 			return true
 		}
-		if b.tokens[x*15+y] == userType{
+		if b.tokens[x*15+y] == userType {
 			zcount++
-		}else{
-			zcount=0
+		} else {
+			zcount = 0
 		}
 		x++
 		y++
@@ -165,17 +164,24 @@ func (b *Board) check5Piece (x,y,userType int) (bool) {
 //	return i,j
 //}
 
-
-func (b *Board) checkNotOverFlow (x,y int) (bool) {
-
+func checkNotOverFlow(x, y int) bool {
+	if x >= 0 && x < 14 && y >= 0 && y < 15 {
+		return true
+	} else {
+		return false
+	}
 }
 
 var nowUser int
-func changeUser(){
-	
+
+func changeUser() {
+	if nowUser == 1 {
+		nowUser++
+	} else {
+		nowUser--
+	}
 }
 
-               
 func main() {
 	var b Board
 	var x, y int
@@ -183,7 +189,7 @@ func main() {
 	fmt.Println("======  Game Start ======")
 	nowUser = 1
 	fmt.Println("======  Black First ======")
-    fmt.Printf("user: %d  plz input :", nowUser)
+	fmt.Printf("user: %d  plz input :", nowUser)
 	for {
 		_, err := fmt.Scan(&x, &y)
 		if err == io.EOF {
