@@ -163,23 +163,29 @@ func (b *Board) check5Piece (x,y,userType int) (bool) {
                
 func main() {
 	var b Board
+	var x, y int
 	b.InitialBoard()
-	b.putPiece(1, 2, 1)
-	b.putPiece(2, 3, 1)
-	b.putPiece(3, 4, 1)
-	b.putPiece(4, 5, 1)
-	b.putPiece(4, 2, 2)
-	b.putPiece(3, 3, 2)
-	b.putPiece(2, 4, 2)
-	b.putPiece(1, 5, 2)
-	b.putPiece(0, 6, 2)
-	b.putPiece(10, 6, 2)
-	b.putPiece(2, 14, 2)
-	b.boardprint()
-	if haveWinner{
-		fmt.Printf("ok")
-	}else{
-		fmt.Printf("NO")
+	fmt.Println("======  Game Start ======")
+	nowUser = 1
+	fmt.Println("======  Black First ======")
+	for {
+		_, err := fmt.Scan(&x, &y)
+		if err == io.EOF {
+			break
+		}
+		if b.putPiece(x, y, nowUser) {
+			fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
+			b.boardprint()
+			if haveWinner == true {
+				fmt.Printf("winner is : %d", nowUser)
+				return
+			}
+			changeUser()
+		} else {
+			fmt.Printf("bad input ,again\n")
+		}
+		fmt.Printf("user: %d  plz input :", nowUser)
+
 	}
 
 	//var temp int
