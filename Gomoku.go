@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 )
 
 // null 0,  user1:○ = 1　user2: ● = 2
+var haveWinner bool = false
+
 type Board struct {
 	tokens [15 * 15]int
 }
@@ -17,31 +20,41 @@ func (b *Board) InitialBoard() {
 	}
 }
 
-var haveWinner bool = false
 
-func (b *Board) putPiece(x, y, userType int) int {
-	if b.tokens[x*15+y] == 0 {
-		b.tokens[x*15+y] = userType
-		if b.check5Piece(x,y,userType){
-			haveWinner=true
+
+func (b *Board) putPiece(x, y, userType int) bool {
+	if checkNotOverFlow(x,y)==true{
+		if b.tokens[x*15+y] == 0 {
+			b.tokens[x*15+y] = userType
+			if b.check5Piece(x,y,userType){
+				haveWinner=true
+			}
+			return true //200 is ok, 500 is not ok
+		} else {
+			return false
 		}
-		return 200 //200 is ok, 500 is not ok
-	} else {
-		return 500
-	}
+	}else {return false}
+
 }
 
 func (b *Board) returnPieceTypeByPosition(x, y int) int {
-	if b.tokens[x*15+y] != 0 {
-		if b.tokens[x*15+y] == 1 {
-			return 1
+	if checkNotOverFlow(x,y)==true{
+		if b.tokens[x*15+y] != 0 {
+			if b.tokens[x*15+y] == 1 {
+				return 1
+			} else {
+				return 2
+			}
 		} else {
-			return 2
+			return 0
 		}
-	} else {
+	}else{
 		return 0
 	}
+
 }
+
+
 func (b *Board) boardprint() int {
 	fmt.Println("    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14")
 	for i := 0; i < 15; i++ {
@@ -153,13 +166,15 @@ func (b *Board) check5Piece (x,y,userType int) (bool) {
 //}
 
 
-//func (b *Board) checkOverFlow (x,y int) (bool) {
-//	if x>=0 && x<14 && y>=0 && y<15{
-//		return true
-//	}else{
-//		return false
-//	}
-//}
+func (b *Board) checkNotOverFlow (x,y int) (bool) {
+
+}
+
+var nowUser int
+func changeUser(){
+	
+}
+
                
 func main() {
 	var b Board
@@ -168,6 +183,7 @@ func main() {
 	fmt.Println("======  Game Start ======")
 	nowUser = 1
 	fmt.Println("======  Black First ======")
+    fmt.Printf("user: %d  plz input :", nowUser)
 	for {
 		_, err := fmt.Scan(&x, &y)
 		if err == io.EOF {
