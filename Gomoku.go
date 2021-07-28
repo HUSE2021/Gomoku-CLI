@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"io"
+	term "github.com/nsf/termbox-go"
 	"math/rand"
 	"os"
 	"os/exec"
 	"runtime"
-	"strconv"
 	"time"
 )
 
@@ -155,6 +154,14 @@ func (b *Board) boardPrint() int {
 				} else {
 					fmt.Printf("─●─")
 				}
+			case -1:
+				if j == 0 {
+					fmt.Printf(" X─")
+				} else if j == boardSize {
+					fmt.Printf("─X ")
+				} else {
+					fmt.Printf("─X─")
+				}
 			default:
 				fmt.Println("Error:Unexpected Token")
 				return 1
@@ -166,6 +173,13 @@ func (b *Board) boardPrint() int {
 }
 
 func (b *Board) winPrint(nowUser int) int {
+	var boardSize = b.boardSize
+	magicNumber := 0 //if you say what's is, IDK,but work
+	if boardSize == 15 {
+		magicNumber = 4
+	} else {
+		magicNumber = 6
+	}
 	fmt.Printf("   ")
 	for i := 0; i < boardSize; i++ {
 		fmt.Printf("%2d", i)
@@ -174,20 +188,20 @@ func (b *Board) winPrint(nowUser int) int {
 	fmt.Println("")
 	for i := 0; i < boardSize; i++ {
 		fmt.Printf("%3d", i)
-		if i == boardSize/2-3 {
-			fmt.Printf("┌──")
-			for k := 0; k < boardSize-2; k++ {
-				fmt.Printf("───")
+		if i == boardSize/2-4 {
+			fmt.Printf(" ╔══")
+			for k := 0; k < boardSize-3; k++ {
+				fmt.Printf("═══")
 			}
-			fmt.Printf("──┐")
-		} else if i == boardSize/2+2 {
-			fmt.Printf("└──")
-			for k := 0; k < boardSize-2; k++ {
-				fmt.Printf("───")
+			fmt.Printf("═══╗")
+		} else if i == boardSize/2+4 {
+			fmt.Printf(" ╚══")
+			for k := 0; k < boardSize-3; k++ {
+				fmt.Printf("═══")
 			}
-			fmt.Printf("──┘")
-		} else if i >= int(boardSize/2)-2 && i <= boardSize/2+1 {
-			fmt.Printf("│  ")
+			fmt.Printf("═══╝")
+		} else if i >= boardSize/2-3 && i <= (boardSize/2)+3 {
+			fmt.Printf(" ║")
 			space := ((boardSize-2)*3 - 36 + 1)
 			left := int(space / 2)
 			right := space - left
@@ -195,14 +209,14 @@ func (b *Board) winPrint(nowUser int) int {
 				fmt.Printf(" ")
 			}
 			if nowUser == 1 {
-				fmt.Printf(winmessage1[i-int(boardSize/2)+2])
+				fmt.Printf(winmessage1[i-magicNumber])
 			} else {
-				fmt.Printf(winmessage2[i-int(boardSize/2)+2])
+				fmt.Printf(winmessage2[i-magicNumber])
 			}
 			for k := 0; k < right; k++ {
 				fmt.Printf(" ")
 			}
-			fmt.Printf("  │")
+			fmt.Printf("║ ")
 		} else {
 			for j := 0; j < boardSize; j++ {
 				switch b.tokens[i*boardSize+j] {
