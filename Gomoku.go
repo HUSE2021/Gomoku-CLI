@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	term "github.com/nsf/termbox-go"
 	"math/rand"
 	"os"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"time"
 )
 
@@ -14,6 +16,7 @@ import (
 var haveWinner bool = false
 var regretStack []Piece
 var boardSize int = 0
+var errorMessage string = ""
 
 var winmessage1 = [...]string{
 	"██████░░░███░██░░░░░░░░██░██░███░░░██",
@@ -525,6 +528,14 @@ func main() {
 	var nowSelect Piece
 	//var nowPosition Piece
 
+	fmt.Println("Gomoku  rulu\n Players alternate turns placing a stone of their color on an empty " +
+		"intersection. Black plays first. The winner is the first player to form an unbroken chain of " +
+		"five stones horizontally, vertically, or diagonally. Placing so that a line of more than five " +
+		"stones of the same color is created does not result in a win. These are called overlines.")
+	fmt.Println("　　　　　　ﾊ,,ﾊ\n　　　　　( ﾟωﾟ ) ")
+	fmt.Print("  Press 'Enter' to continue... ")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+
 	rand.Seed(time.Now().Unix())
 	b.getUserName()
 	b.getBoardSize()
@@ -575,7 +586,7 @@ func main() {
 				regretStack = append(regretStack, Piece{nowSelect.x, nowSelect.y, nowUser})
 				nowPositionUser = nowUser
 				CallClear()
-				fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
+				errorMessage = "user " + b.userName[nowUser-1] + " put in " + strconv.Itoa(nowSelect.x) + " " + strconv.Itoa(nowSelect.y)
 				b.boardPrint()
 				if haveWinner == true {
 					CallClear()
@@ -585,13 +596,14 @@ func main() {
 				}
 				changeUser(&nowUser)
 			} else {
+                errorMessage = "pity! There are already chess pieces on it"
 				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
 				b.putPiece(nowSelect.x, nowSelect.y, -1)
 			}
 		}
 		if keyWait == "backspace" {
 			if !b.regret() {
-				fmt.Println("	    ======  YOU CAN NOT REGRET ======")
+				errorMessage = b.userName[nowUser-1] + "regret!"
 			} else {
 				changeUser(&nowUser)
 			}
