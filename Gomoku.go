@@ -15,8 +15,24 @@ var haveWinner bool = false
 var regretStack []Piece
 var boardSize int = 0
 
-var winmessage2 = [...]string{"   ___   ___                       ", "  //‾//  __//    ||/|// //‾// //|//", " //‾‾  //__      |//|/ //_// // |/ ", "                                   "}
-var winmessage2 = [...]string{"   ___   ___                       ", "  //‾//  __//    ||/|// //‾// //|//", " //‾‾  //__      |//|/ //_// // |/ ", "                                   "}
+var winmessage1 = [...]string{
+	"██████░░░███░██░░░░░░░░██░██░███░░░██",
+	"██░░░██░████░██░░░██░░░██░██░████░░██",
+	"██████░██░██░░██░████░██░░██░██░██░██",
+	"██░░░░░░░░██░░████░░████░░██░██░░████",
+	"██░░░░░███████░██░░░░██░░░██░██░░░███",
+	"»»—————————————-　★　—————————————-««",
+	"░░░░░░░░░░Congratulations!!░░░░░░░░░░",
+}
+var winmessage2 = [...]string{
+	"██████░█████░██░░░░░░░░██░██░███░░░██",
+	"██░░░██░░░██░██░░░██░░░██░██░████░░██",
+	"██████░░███░░░██░████░██░░██░██░██░██",
+	"██░░░░░██░░░░░████░░████░░██░██░░████",
+	"██░░░░███████░░██░░░░██░░░██░██░░░███",
+	"»»—————————————-　★　—————————————-««",
+	"░░░░░░░░░░Congratulations!!░░░░░░░░░░",
+}
 
 type Piece struct {
 	x    int
@@ -151,7 +167,7 @@ func (b *Board) boardPrint() int {
 			case 2:
 				if j == 0 {
 					fmt.Printf(" ●─")
-				} else if j == boardSize {
+				} else if j == boardSize-1 {
 					fmt.Printf("─● ")
 				} else {
 					fmt.Printf("─●─")
@@ -159,7 +175,7 @@ func (b *Board) boardPrint() int {
 			case -1:
 				if j == 0 {
 					fmt.Printf(" X─")
-				} else if j == boardSize {
+				} else if j == boardSize-1 {
 					fmt.Printf("─X ")
 				} else {
 					fmt.Printf("─X─")
