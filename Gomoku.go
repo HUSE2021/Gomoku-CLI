@@ -43,6 +43,9 @@ func CallClear() {
 	}
 }
 
+
+
+
 func (b *Board) putPiece(x, y, userType int) bool {
 	fmt.Println(x, "+", y, "+", userType)
 	if userType == 0 {
@@ -134,6 +137,8 @@ func (b *Board) boardPrint() int {
 	}
 	return 0
 }
+
+
 
 func (b *Board) check5Piece(x, y, userType int) bool {
 	xcount, ycount, zcount := 0, 0, 0
@@ -258,6 +263,8 @@ func main() {
 			fmt.Println("	    ======  Bad Input, Again  ======")
 		}
 	}
+
+
 
 	//Initial Game
 	b.InitialBoard()
