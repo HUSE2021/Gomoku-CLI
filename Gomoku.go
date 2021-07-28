@@ -348,6 +348,59 @@ type Piece struct {
 	y int
 }
 
+
+
+func (b *Board) getUserName() {
+	for len(b.userName[0]) == 0 {
+		fmt.Println("	    ======  Plz input user1 name:  ======")
+		_, errG := fmt.Scan(&b.userName[0])
+		if errG != nil {
+			return
+		}
+	}
+	for len(b.userName[1]) == 0 {
+		fmt.Println("	    ======  Plz input user2 name:  ======")
+		_, err := fmt.Scan(&b.userName[1])
+		if err != nil {
+			return
+		}
+		if b.userName[0] == b.userName[1] {
+			fmt.Println("	    ======  Cannot same name with user1 !!!  ======")
+			b.userName[1] = ""
+		}
+	}
+	for {
+		fmt.Printf("	    ======  who is first ?  \n   ======  (A)%s  (B)%s (C)random  ============\n", b.userName[0], b.userName[1])
+		choice := "C"
+		_, err := fmt.Scan(&choice)
+		if err != nil {
+			fmt.Println("bad choice")
+			return
+		}
+		if choice == "A" {
+			break
+		} else if choice == "B" {
+			var temp = b.userName[0]
+			b.userName[0] = b.userName[1]
+			b.userName[1] = temp
+			break
+		} else if choice == "C" {
+			r := rand.New(rand.NewSource(time.Now().Unix()))
+			var ra = r.Intn(2)
+			if ra == 1 {
+				var temp = b.userName[0]
+				b.userName[0] = b.userName[1]
+				b.userName[1] = temp
+			}
+			fmt.Printf("	    ======  Fist is %s  ======\n", b.userName[0])
+			break
+		} else {
+			fmt.Println("	    ======  Bad Input, Again  ======")
+		}
+	}
+}
+
+
 func main() {
 	var b Board
 	var xInput, yInput string
