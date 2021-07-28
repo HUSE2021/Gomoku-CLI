@@ -83,7 +83,7 @@ func (b *Board) regret() bool {
 	if len(regretStack) == 0 {
 		return false
 	} else {
-		fmt.Println("stack top is: ", regretStack[len(regretStack)-1].x, "and ", regretStack[len(regretStack)-1].y, "by: ", regretStack[len(regretStack)-1].user, "\nnow size: ", len(regretStack))
+		//fmt.Println("stack top is: ", regretStack[len(regretStack)-1].x, "and ", regretStack[len(regretStack)-1].y, "by: ", regretStack[len(regretStack)-1].user, "\nnow size: ", len(regretStack))
 		if b.putPiece(regretStack[len(regretStack)-1].x, regretStack[len(regretStack)-1].y, 0) {
 			regretStack = regretStack[:len(regretStack)-1]
 		}
@@ -185,7 +185,7 @@ func (b *Board) boardPrint() int {
 					fmt.Printf("─X─")
 				}
 			default:
-				fmt.Println("Error:Unexpected Token")
+				errorMessage="Error:Unexpected Token"
 				return 1
 			}
 		}
@@ -279,7 +279,7 @@ func (b *Board) winPrint(nowUser int) int {
 						fmt.Printf("─●─")
 					}
 				default:
-					fmt.Println("Error:Unexpected Token")
+					errorMessage="Error:Unexpected Token"
 					return 1
 				}
 			}
@@ -476,7 +476,7 @@ func (b *Board) keyGet() string {
 	b.boardPrint()
 	fmt.Println(regretStack)
 	fmt.Println(errorMessage)
-	fmt.Println("Enter ↑ ↓ ← → to select, SPACE to regret")
+	//fmt.Println("Enter ↑ ↓ ← → to select, SPACE to regret")
 keyPressListenerLoop:
 	for {
 		switch ev := term.PollEvent(); ev.Type {
@@ -486,27 +486,27 @@ keyPressListenerLoop:
 				break keyPressListenerLoop
 			case term.KeyArrowUp:
 				reset()
-				fmt.Println("Arrow Up pressed")
+				//fmt.Println("Arrow Up pressed")
 				return "up"
 			case term.KeyArrowDown:
 				reset()
-				fmt.Println("Arrow Down pressed")
+				//fmt.Println("Arrow Down pressed")
 				return "down"
 			case term.KeyArrowLeft:
 				reset()
-				fmt.Println("Arrow Left pressed")
+				//fmt.Println("Arrow Left pressed")
 				return "left"
 			case term.KeyArrowRight:
 				reset()
-				fmt.Println("Arrow Right pressed")
+				//fmt.Println("Arrow Right pressed")
 				return "right"
 			case term.KeyEnter:
 				reset()
-				fmt.Println("Enter pressed")
+				//fmt.Println("Enter pressed")
 				return "enter"
 			case term.KeySpace:
 				reset()
-				fmt.Println("Backspace pressed")
+				//fmt.Println("Backspace pressed")
 				return "backspace"
 			default:
 				// we only want to read a single character or one key pressed event
@@ -611,7 +611,7 @@ func main() {
 				if haveWinner == true {
 					CallClear()
 					b.winPrint(nowUser)
-					println("Congratulations!! " + b.userName[nowUser-1])
+					fmt.Println("Congratulations!! " + b.userName[nowUser-1])
 					return
 				}
 				changeUser(&nowUser)
@@ -626,7 +626,7 @@ func main() {
 				errorMessage = ("	YOU CAN NOT REGRET ")
 			} else {
 				changeUser(&nowUser)
-				errorMessage = b.userName[nowUser-1] + "regret!"
+				errorMessage = b.userName[nowUser-1] + " regret!"
 			}
 			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
 			b.putPiece(nowSelect.x, nowSelect.y, -1)
