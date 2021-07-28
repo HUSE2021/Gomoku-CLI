@@ -440,6 +440,58 @@ func (b *Board) getUserName() {
 	}
 }
 
+func (b *Board) keyGet() string {
+	err := term.Init()
+	if err != nil {
+		panic(err)
+	}
+	defer term.Close()
+	b.boardPrint()
+	fmt.Println(regretStack)
+	fmt.Println("Enter any key to see their ASCII code or press ESC button to quit")
+keyPressListenerLoop:
+	for {
+		switch ev := term.PollEvent(); ev.Type {
+		case term.EventKey:
+			switch ev.Key {
+			case term.KeyEsc:
+				break keyPressListenerLoop
+			case term.KeyArrowUp:
+				reset()
+				fmt.Println("Arrow Up pressed")
+				return "up"
+			case term.KeyArrowDown:
+				reset()
+				fmt.Println("Arrow Down pressed")
+				return "down"
+			case term.KeyArrowLeft:
+				reset()
+				fmt.Println("Arrow Left pressed")
+				return "left"
+			case term.KeyArrowRight:
+				reset()
+				fmt.Println("Arrow Right pressed")
+				return "right"
+			case term.KeyEnter:
+				reset()
+				fmt.Println("Enter pressed")
+				return "enter"
+			case term.KeySpace:
+				reset()
+				fmt.Println("Backspace pressed")
+				return "backspace"
+			default:
+				// we only want to read a single character or one key pressed event
+				reset()
+				fmt.Println("ASCII : ", ev.Ch)
+			}
+		case term.EventError:
+			panic(ev.Err)
+		}
+	}
+	return "error"
+}
+
 func main() {
 	var b Board
 	var xInput, yInput string
