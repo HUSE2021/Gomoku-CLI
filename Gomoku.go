@@ -494,9 +494,12 @@ keyPressListenerLoop:
 
 func main() {
 	var b Board
-	var xInput, yInput string
 	var x, y int
 	var nowUser int
+	var keyWait string
+	var nowPositionUser int
+	var nowSelect Piece
+	//var nowPosition Piece
 
 	rand.Seed(time.Now().Unix())
 	b.getUserName()
@@ -505,52 +508,71 @@ func main() {
 	nowUser = 1
 	fmt.Println("	    ======  Black First ======")
 	b.boardPrint()
+
+	nowSelect.x = 7
+	nowSelect.y = 7
+	nowSelect.user = -1
+
+	nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+	b.putPiece(nowSelect.x, nowSelect.y, -1)
+
 	for {
+		keyWait = ""
+		keyWait = b.keyGet()
+		b.putPiece(nowSelect.x, nowSelect.y, nowPositionUser)
+
 		fmt.Println(regretStack)
-		fmt.Printf("user:%s  plz input （input 'R' to regret）:", b.userName[nowUser-1])
-		_, err := fmt.Scanln(&xInput, &yInput)
-		if err == io.EOF {
-			break
+
+		if keyWait == "left" {
+			nowSelect.y = nowSelect.y - 1
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
 		}
-		//regret
-		if xInput == "R" {
-			CallClear()
+		if keyWait == "right" {
+			nowSelect.y = nowSelect.y + 1
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
+
+		}
+		if keyWait == "down" {
+			nowSelect.x = nowSelect.x + 1
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
+
+		}
+		if keyWait == "up" {
+			nowSelect.x = nowSelect.x - 1
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
+		}
+		if keyWait == "enter" {
+			if b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y) == 0 {
+				b.putPiece(nowSelect.x, nowSelect.y, nowUser)
+				regretStack = append(regretStack, Piece{nowSelect.x, nowSelect.y, nowUser})
+				nowPositionUser = nowUser
+				CallClear()
+				fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
+				b.boardPrint()
+				if haveWinner == true {
+					CallClear()
+					b.winPrint(nowUser)
+					fmt.Printf("Congratulations!! %s", b.userName[nowUser-1])
+					return
+				}
+				changeUser(&nowUser)
+			} else {
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			}
+		}
+		if keyWait == "backspace" {
 			if !b.regret() {
 				fmt.Println("	    ======  YOU CAN NOT REGRET ======")
 			} else {
 				changeUser(&nowUser)
 			}
-			b.boardPrint()
-		} else {
-			if xInput == "" || yInput == "" {
-				fmt.Println("	    ======  Bad X and Y ======")
-				continue
-			}
-			//is not regret So let input text as X and Y
-			x, err = strconv.Atoi(xInput)
-			y, err = strconv.Atoi(yInput)
-			xInput = ""
-			yInput = ""
-			if err == io.EOF {
-				break
-			}
-
-			if b.putPiece(x, y, nowUser) {
-				regretStack = append(regretStack, Piece{x, y})
-				CallClear()
-				fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
-				b.boardPrint()
-				if haveWinner == true {
-					b.winPrint(nowUser)
-					return
-				}
-				changeUser(&nowUser)
-				b.winPrint(1)
-			} else {
-				CallClear()
-				b.boardPrint()
-				fmt.Printf("bad input ,again\n")
-			}
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
 		}
 	}
 
