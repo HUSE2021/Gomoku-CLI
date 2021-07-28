@@ -10,16 +10,18 @@ import (
 	"time"
 )
 
-// null 0,  user1:○ = 1　user2: ● = 2
+// null 0,  user1:○ = 1　user2: ● = 2  select time =-1
 var haveWinner bool = false
 var regretStack []Piece
 var boardSize int = 0
 
-var winmessage1 = [...]string{"   ___   __                        ", "  //‾//  //      ||/|// //‾// //|//", " //‾‾   //       |//|/ //_// // |/ ", "                                   "}
 var winmessage2 = [...]string{"   ___   ___                       ", "  //‾//  __//    ||/|// //‾// //|//", " //‾‾  //__      |//|/ //_// // |/ ", "                                   "}
+var winmessage2 = [...]string{"   ___   ___                       ", "  //‾//  __//    ||/|// //‾// //|//", " //‾‾  //__      |//|/ //_// // |/ ", "                                   "}
+
 type Piece struct {
-	x int
-	y int
+	x    int
+	y    int
+	user int
 }
 
 type Board struct {
@@ -61,7 +63,7 @@ func (b *Board) regret() bool {
 	if len(regretStack) == 0 {
 		return false
 	} else {
-		fmt.Println("stack top is: ", regretStack[len(regretStack)-1].x, "and ", regretStack[len(regretStack)-1].y, "now size: ", len(regretStack))
+		fmt.Println("stack top is: ", regretStack[len(regretStack)-1].x, "and ", regretStack[len(regretStack)-1].y, "by: ", regretStack[len(regretStack)-1].user, "\nnow size: ", len(regretStack))
 		if b.putPiece(regretStack[len(regretStack)-1].x, regretStack[len(regretStack)-1].y, 0) {
 			regretStack = regretStack[:len(regretStack)-1]
 		}
@@ -77,13 +79,11 @@ func (b *Board) putPiece(x, y, userType int) bool {
 		return true
 	}
 	if b.checkNotOverFlow(x, y) == true {
-		if b.tokens[x*boardSize+y] == 0 {
-			b.tokens[x*boardSize+y] = userType
-			if b.check5Piece(x, y, userType) {
-				haveWinner = true
-			}
-			return true //200 is ok, 500 is not ok
+		b.tokens[x*boardSize+y] = userType
+		if b.check5Piece(x, y, userType) {
+			haveWinner = true
 		}
+		return true //200 is ok, 500 is not ok
 	}
 	return false
 }
@@ -94,8 +94,10 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 		if b.tokens[x*boardSize+y] != 0 {
 			if b.tokens[x*boardSize+y] == 1 {
 				return 1
-			} else {
+			} else if b.tokens[x*boardSize+y] == 2 {
 				return 2
+			} else {
+				return -1
 			}
 		} else {
 			return 0
@@ -331,6 +333,10 @@ func (b *Board) check5Piece(x, y, userType int) bool {
 		y++
 	}
 	return false
+}
+
+func reset() {
+	term.Sync() // cosmestic purpose
 }
 
 //func startXY1(x,y int)(i,j int) {
