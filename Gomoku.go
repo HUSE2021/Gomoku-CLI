@@ -3,6 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"os/exec"
+	"runtime"
+	"strconv"
 )
 
 // null 0,  user1:○ = 1　user2: ● = 2
@@ -37,7 +41,7 @@ func (b *Board) putPiece(x, y, userType int) bool {
 
 }
 
-func (b *Board) returnPieceTypeByPosition(x, y int) in
+func (b *Board) returnPieceTypeByPosition(x, y int) int {
 	if checkNotOverFlow(x, y) == true {
 		if b.tokens[x*15+y] != 0 {
 			if b.tokens[x*15+y] == 1 {
@@ -72,7 +76,7 @@ func (b *Board) boardPrint() int {
 					fmt.Printf("─┐ ")
 				} else if i == boardSize-1 && j == 0 {
 					fmt.Printf(" └─")
-				} else if i == boardSize-1 && j == boa
+				} else if i == boardSize-1 && j == boardSize-1 {
 					fmt.Printf("─┘ ")
 				} else if j == 0 {
 					fmt.Printf(" ├─")
@@ -110,6 +114,30 @@ func (b *Board) boardPrint() int {
 	}
 	return 0
 }
+
+var clear map[string]func() //create a map for storing clear funcs
+func init() {
+	clear = make(map[string]func()) //Initialize it
+	clear["linux"] = func() {
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+}
+func CallClear() {
+	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
+	if ok {                          //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
+	}
+}
+
 
 func (b *Board) check5Piece(x, y, userType int) bool {
 	xcount, ycount, zcount := 0, 0, 0
@@ -229,10 +257,10 @@ func main() {
 			break
 		}
 		if b.putPiece(x, y, nowUser) {
-			fmt.Printf("user: %d  put in: %d,%d\n", no
+			fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
 			b.boardprint()
 			if haveWinner == true {
-				fmt.Printf("winner is : %d\n", nowUser
+				fmt.Printf("winner is : %d\n", nowUser)
 				return
 			}
 			changeUser(&nowUser)
