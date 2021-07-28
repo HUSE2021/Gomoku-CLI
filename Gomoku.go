@@ -3,22 +3,34 @@ package main
 import (
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
+	"time"
 )
 
 // null 0,  user1:○ = 1　user2: ● = 2
 var haveWinner bool = false
+var regretStack []Piece
 var boardSize int = 0
-var regretStact []Piece
 
-type Board struct {
-	tokens []int
+var winmessage1 = [...]string{"   ___   __                        ", "  //‾//  //      ||/|// //‾// //|//", " //‾‾   //       |//|/ //_// // |/ ", "                                   "}
+var winmessage2 = [...]string{"   ___   ___                       ", "  //‾//  __//    ||/|// //‾// //|//", " //‾‾  //__      |//|/ //_// // |/ ", "                                   "}
+type Piece struct {
+	x int
+	y int
 }
 
-func (b *Board) InitialBoard() {
+type Board struct {
+	tokens    []int
+	userName  [2]string
+	boardSize int
+}
+
+func (b *Board) InitialBoard(boardSize int) {
+	b.boardSize = boardSize
 	b.tokens = make([]int, boardSize*boardSize)
 }
 
@@ -47,24 +59,25 @@ func CallClear() {
 }
 
 func (b *Board) regret() bool {
-	if len(regretStact) == 0 {
+	if len(regretStack) == 0 {
 		return false
 	} else {
-		fmt.Println("stack top is: ", regretStact[len(regretStact)-1].x, "and ", regretStact[len(regretStact)-1].y, "now size: ", len(regretStact))
-		if b.putPiece(regretStact[len(regretStact)-1].x, regretStact[len(regretStact)-1].y, 0) {
-			regretStact = regretStact[:len(regretStact)-1]
+		fmt.Println("stack top is: ", regretStack[len(regretStack)-1].x, "and ", regretStack[len(regretStack)-1].y, "now size: ", len(regretStack))
+		if b.putPiece(regretStack[len(regretStack)-1].x, regretStack[len(regretStack)-1].y, 0) {
+			regretStack = regretStack[:len(regretStack)-1]
 		}
 		return true
 	}
 }
 
 func (b *Board) putPiece(x, y, userType int) bool {
+	var boardSize = b.boardSize
 	fmt.Println(x, "+", y, "+", userType)
 	if userType == 0 {
 		b.tokens[x*boardSize+y] = 0
 		return true
 	}
-	if checkNotOverFlow(x, y) == true {
+	if b.checkNotOverFlow(x, y) == true {
 		if b.tokens[x*boardSize+y] == 0 {
 			b.tokens[x*boardSize+y] = userType
 			if b.check5Piece(x, y, userType) {
@@ -77,7 +90,8 @@ func (b *Board) putPiece(x, y, userType int) bool {
 }
 
 func (b *Board) returnPieceTypeByPosition(x, y int) int {
-	if checkNotOverFlow(x, y) == true {
+	var boardSize = b.boardSize
+	if b.checkNotOverFlow(x, y) == true {
 		if b.tokens[x*boardSize+y] != 0 {
 			if b.tokens[x*boardSize+y] == 1 {
 				return 1
@@ -92,7 +106,6 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 	}
 
 }
-
 
 func (b *Board) boardPrint() int {
 	var boardSize = b.boardSize
@@ -240,8 +253,8 @@ func (b *Board) winPrint(nowUser int) int {
 	return 0
 }
 
-
 func (b *Board) check5Piece(x, y, userType int) bool {
+	var boardSize = b.boardSize
 	xcount, ycount, zcount := 0, 0, 0
 	x2, y2 := x, y
 	if userType == 0 {
@@ -327,7 +340,8 @@ func (b *Board) check5Piece(x, y, userType int) bool {
 //	return i,j
 //}
 
-func checkNotOverFlow(x, y int) bool {
+func (b *Board) checkNotOverFlow(x, y int) bool {
+	var boardSize = b.boardSize
 	if x >= 0 && x < boardSize && y >= 0 && y < boardSize {
 		return true
 	} else {
@@ -343,12 +357,24 @@ func changeUser(nowUser *int) {
 	}
 }
 
-type Piece struct {
-	x int
-	y int
+func (b *Board) getBoardSize() {
+	getBoardSize := "A"
+	fmt.Println("	    ======  Game Start  ======")
+	for b.boardSize == 0 {
+		fmt.Println("	    ======  Select Board Size  ======\n   ======  (A)15  (B)19   ======")
+		_, err := fmt.Scan(&getBoardSize)
+		if err != nil {
+			return
+		}
+		if getBoardSize == "A" {
+			b.InitialBoard(15)
+		} else if getBoardSize == "B" {
+			b.InitialBoard(19)
+		} else {
+			fmt.Println("	    ======  Bad Input, Again  ======")
+		}
+	}
 }
-
-
 
 func (b *Board) getUserName() {
 	for len(b.userName[0]) == 0 {
@@ -399,7 +425,6 @@ func (b *Board) getUserName() {
 		}
 	}
 }
-
 
 func main() {
 	var b Board
@@ -461,4 +486,25 @@ func main() {
 				fmt.Printf("bad input ,again\n")
 			}
 		}
+	}
+
+	//var temp int
+	//temp = b.returnPieceTypeByPosition(0, 0)
+	//if temp == 0 {
+	//	fmt.Println(".")
+	//} else if temp == 1 {
+	//	fmt.Println("○")
+	//} else if temp == 2 {
+	//	fmt.Println("●")
+	//}
+	//
+	//temp = b.returnPieceTypeByPosition(0, 1)
+	//if temp == 0 {
+	//	fmt.Println(".")
+	//} else if temp == 1 {
+	//	fmt.Println("○")
+	//} else if temp == 2 {
+	//	fmt.Println("●")
+	//}
+
 }
