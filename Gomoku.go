@@ -93,7 +93,9 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 
 }
 
+
 func (b *Board) boardPrint() int {
+	var boardSize = b.boardSize
 	fmt.Printf("   ")
 	for i := 0; i < boardSize; i++ {
 		fmt.Printf("%2d", i)
@@ -149,6 +151,95 @@ func (b *Board) boardPrint() int {
 	}
 	return 0
 }
+
+func (b *Board) winPrint(nowUser int) int {
+	fmt.Printf("   ")
+	for i := 0; i < boardSize; i++ {
+		fmt.Printf("%2d", i)
+		fmt.Printf(" ")
+	}
+	fmt.Println("")
+	for i := 0; i < boardSize; i++ {
+		fmt.Printf("%3d", i)
+		if i == boardSize/2-3 {
+			fmt.Printf("┌──")
+			for k := 0; k < boardSize-2; k++ {
+				fmt.Printf("───")
+			}
+			fmt.Printf("──┐")
+		} else if i == boardSize/2+2 {
+			fmt.Printf("└──")
+			for k := 0; k < boardSize-2; k++ {
+				fmt.Printf("───")
+			}
+			fmt.Printf("──┘")
+		} else if i >= int(boardSize/2)-2 && i <= boardSize/2+1 {
+			fmt.Printf("│  ")
+			space := ((boardSize-2)*3 - 36 + 1)
+			left := int(space / 2)
+			right := space - left
+			for k := 0; k < left; k++ {
+				fmt.Printf(" ")
+			}
+			if nowUser == 1 {
+				fmt.Printf(winmessage1[i-int(boardSize/2)+2])
+			} else {
+				fmt.Printf(winmessage2[i-int(boardSize/2)+2])
+			}
+			for k := 0; k < right; k++ {
+				fmt.Printf(" ")
+			}
+			fmt.Printf("  │")
+		} else {
+			for j := 0; j < boardSize; j++ {
+				switch b.tokens[i*boardSize+j] {
+				case 0:
+					if i == 0 && j == 0 {
+						fmt.Printf(" ┌─")
+					} else if i == 0 && j == boardSize-1 {
+						fmt.Printf("─┐ ")
+					} else if i == boardSize-1 && j == 0 {
+						fmt.Printf(" └─")
+					} else if i == boardSize-1 && j == boardSize-1 {
+						fmt.Printf("─┘ ")
+					} else if j == 0 {
+						fmt.Printf(" ├─")
+					} else if j == boardSize-1 {
+						fmt.Printf("─┤ ")
+					} else if i == 0 {
+						fmt.Printf("─┬─")
+					} else if i == boardSize-1 {
+						fmt.Printf("─┴─")
+					} else {
+						fmt.Printf("─┼─")
+					}
+				case 1:
+					if j == 0 {
+						fmt.Printf(" ○─")
+					} else if j == boardSize-1 {
+						fmt.Printf("─○ ")
+					} else {
+						fmt.Printf("─○─")
+					}
+				case 2:
+					if j == 0 {
+						fmt.Printf(" ●─")
+					} else if j == boardSize {
+						fmt.Printf("─● ")
+					} else {
+						fmt.Printf("─●─")
+					}
+				default:
+					fmt.Println("Error:Unexpected Token")
+					return 1
+				}
+			}
+		}
+		fmt.Println("")
+	}
+	return 0
+}
+
 
 func (b *Board) check5Piece(x, y, userType int) bool {
 	xcount, ycount, zcount := 0, 0, 0
