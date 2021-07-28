@@ -612,6 +612,9 @@ func main() {
 					CallClear()
 					b.winPrint(nowUser)
 					fmt.Println("Congratulations!! " + b.userName[nowUser-1])
+					fmt.Println("　　　　　　ﾊ,,ﾊ\n　　　　　( ﾟωﾟ ) ")
+					fmt.Print("  Press 'Enter' to exit... ")
+					bufio.NewReader(os.Stdin).ReadBytes('\n')
 					return
 				}
 				changeUser(&nowUser)
