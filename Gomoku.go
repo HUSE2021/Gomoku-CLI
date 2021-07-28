@@ -11,6 +11,8 @@ import (
 
 // null 0,  user1:○ = 1　user2: ● = 2
 var haveWinner bool = false
+var boardSize int = 0
+var regretStact []Piece
 
 type Board struct {
 	tokens []int
@@ -20,6 +22,7 @@ func (b *Board) InitialBoard() {
 	b.tokens = make([]int, boardSize*boardSize)
 }
 
+//flash terminal
 var clear map[string]func() //create a map for storing clear funcs
 func init() {
 	clear = make(map[string]func()) //Initialize it
@@ -43,8 +46,17 @@ func CallClear() {
 	}
 }
 
-
-
+func (b *Board) regret() bool {
+	if len(regretStact) == 0 {
+		return false
+	} else {
+		fmt.Println("stack top is: ", regretStact[len(regretStact)-1].x, "and ", regretStact[len(regretStact)-1].y, "now size: ", len(regretStact))
+		if b.putPiece(regretStact[len(regretStact)-1].x, regretStact[len(regretStact)-1].y, 0) {
+			regretStact = regretStact[:len(regretStact)-1]
+		}
+		return true
+	}
+}
 
 func (b *Board) putPiece(x, y, userType int) bool {
 	fmt.Println(x, "+", y, "+", userType)
@@ -138,18 +150,18 @@ func (b *Board) boardPrint() int {
 	return 0
 }
 
-
-
 func (b *Board) check5Piece(x, y, userType int) bool {
 	xcount, ycount, zcount := 0, 0, 0
 	x2, y2 := x, y
-
-	for i := 0; i < 15; i++ {
+	if userType == 0 {
+		return false
+	}
+	for i := 0; i < boardSize; i++ {
 		//"-"
 		if xcount == 5 {
 			return true
 		}
-		if b.tokens[x*15+i] == userType {
+		if b.tokens[x*boardSize+i] == userType {
 
 			xcount++
 		} else {
@@ -159,22 +171,22 @@ func (b *Board) check5Piece(x, y, userType int) bool {
 		if ycount == 5 {
 			return true
 		}
-		if b.tokens[i*15+y] == userType {
+		if b.tokens[i*boardSize+y] == userType {
 			ycount++
 		} else {
 			ycount = 0
 		}
 	}
 	// "/"
-	for x2 > 0 && y2 < 15 {
+	for x2 > 0 && y2 < boardSize {
 		x2--
 		y2++
 	}
-	for x2 < 15 && y2 > 0 {
+	for x2 < boardSize && y2 > 0 {
 		if zcount == 5 {
 			return true
 		}
-		if b.tokens[x2*15+y2] == userType {
+		if b.tokens[x2*boardSize+y2] == userType {
 			zcount++
 		} else {
 			zcount = 0
@@ -188,11 +200,11 @@ func (b *Board) check5Piece(x, y, userType int) bool {
 		x--
 		y--
 	}
-	for x < 15 && y < 15 {
+	for x < boardSize && y < boardSize {
 		if zcount == 5 {
 			return true
 		}
-		if b.tokens[x*15+y] == userType {
+		if b.tokens[x*boardSize+y] == userType {
 			zcount++
 		} else {
 			zcount = 0
@@ -225,7 +237,7 @@ func (b *Board) check5Piece(x, y, userType int) bool {
 //}
 
 func checkNotOverFlow(x, y int) bool {
-	if x >= 0 && x < 14 && y >= 0 && y < 15 {
+	if x >= 0 && x < boardSize && y >= 0 && y < boardSize {
 		return true
 	} else {
 		return false
@@ -238,6 +250,11 @@ func changeUser(nowUser *int) {
 	} else {
 		*nowUser--
 	}
+}
+
+type Piece struct {
+	x int
+	y int
 }
 
 func main() {
@@ -263,8 +280,6 @@ func main() {
 			fmt.Println("	    ======  Bad Input, Again  ======")
 		}
 	}
-
-
 
 	//Initial Game
 	b.InitialBoard()
