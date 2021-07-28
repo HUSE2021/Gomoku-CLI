@@ -463,6 +463,7 @@ func (b *Board) getUserName() {
 }
 
 func (b *Board) keyGet() string {
+	CallClear()
 	err := term.Init()
 	if err != nil {
 		panic(err)
@@ -470,7 +471,8 @@ func (b *Board) keyGet() string {
 	defer term.Close()
 	b.boardPrint()
 	fmt.Println(regretStack)
-	fmt.Println("Enter any key to see their ASCII code or press ESC button to quit")
+	fmt.Println(errorMessage)
+	fmt.Println("Enter ↑ ↓ ← → to select, SPACE to regret")
 keyPressListenerLoop:
 	for {
 		switch ev := term.PollEvent(); ev.Type {
@@ -505,7 +507,7 @@ keyPressListenerLoop:
 			default:
 				// we only want to read a single character or one key pressed event
 				reset()
-				fmt.Println("ASCII : ", ev.Ch)
+				return "other"
 			}
 		case term.EventError:
 			panic(ev.Err)
@@ -595,6 +597,9 @@ func main() {
 			}
 			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
 			b.putPiece(nowSelect.x, nowSelect.y, -1)
+		}
+		if keyWait == "other" {
+			errorMessage = "You have entered the wrong command"
 		}
 	}
 
