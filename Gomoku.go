@@ -13,38 +13,58 @@ import (
 var haveWinner bool = false
 
 type Board struct {
-	tokens [15 * 15]int
+	tokens []int
 }
 
 func (b *Board) InitialBoard() {
-	var i int
+	b.tokens = make([]int, boardSize*boardSize)
+}
 
-	for i = 0; i < 15*15; i++ {
-		b.tokens[i] = 0
+var clear map[string]func() //create a map for storing clear funcs
+func init() {
+	clear = make(map[string]func()) //Initialize it
+	clear["linux"] = func() {
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+}
+func CallClear() {
+	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
+	if ok {                          //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
 	}
 }
 
 func (b *Board) putPiece(x, y, userType int) bool {
+	fmt.Println(x, "+", y, "+", userType)
+	if userType == 0 {
+		b.tokens[x*boardSize+y] = 0
+		return true
+	}
 	if checkNotOverFlow(x, y) == true {
-		if b.tokens[x*15+y] == 0 {
-			b.tokens[x*15+y] = userType
+		if b.tokens[x*boardSize+y] == 0 {
+			b.tokens[x*boardSize+y] = userType
 			if b.check5Piece(x, y, userType) {
 				haveWinner = true
 			}
 			return true //200 is ok, 500 is not ok
-		} else {
-			return false
 		}
-	} else {
-		return false
 	}
-
+	return false
 }
 
 func (b *Board) returnPieceTypeByPosition(x, y int) int {
 	if checkNotOverFlow(x, y) == true {
-		if b.tokens[x*15+y] != 0 {
-			if b.tokens[x*15+y] == 1 {
+		if b.tokens[x*boardSize+y] != 0 {
+			if b.tokens[x*boardSize+y] == 1 {
 				return 1
 			} else {
 				return 2
@@ -114,30 +134,6 @@ func (b *Board) boardPrint() int {
 	}
 	return 0
 }
-
-var clear map[string]func() //create a map for storing clear funcs
-func init() {
-	clear = make(map[string]func()) //Initialize it
-	clear["linux"] = func() {
-		cmd := exec.Command("clear") //Linux example, its tested
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-	clear["windows"] = func() {
-		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-}
-func CallClear() {
-	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
-	if ok {                          //if we defined a clear func for that platform:
-		value() //we execute it
-	} else { //unsupported platform
-		panic("Your platform is unsupported! I can't clear terminal screen :(")
-	}
-}
-
 
 func (b *Board) check5Piece(x, y, userType int) bool {
 	xcount, ycount, zcount := 0, 0, 0
@@ -241,34 +237,79 @@ func changeUser(nowUser *int) {
 
 func main() {
 	var b Board
+	var xInput, yInput string
 	var x, y int
 	var nowUser int
+
+	getBoardSize := "A"
+	fmt.Println("	    ======  Game Start  ======")
+	//select board Size
+	for boardSize == 0 {
+		fmt.Println("	    ======  Select Board Size  ======\n   ======  (A)15  (B)19   ======")
+		_, err := fmt.Scan(&getBoardSize)
+		if err != nil {
+			return
+		}
+		if getBoardSize == "A" {
+			boardSize = 15
+		} else if getBoardSize == "B" {
+			boardSize = 19
+		} else {
+			fmt.Println("	    ======  Bad Input, Again  ======")
+		}
+	}
 
 	//Initial Game
 	b.InitialBoard()
 	nowUser = 1
-	fmt.Println("	    ======  Game Start  ======")
 	fmt.Println("	    ======  Black First ======")
-	b.boardprint()
-	fmt.Printf("user: %d  plz input :", nowUser)
+	b.boardPrint()
 	for {
-		_, err := fmt.Scan(&x, &y)
+		fmt.Println(regretStact)
+		fmt.Printf("user: %d  plz input （input 'R' to regret）:", nowUser)
+		_, err := fmt.Scanln(&xInput, &yInput)
 		if err == io.EOF {
 			break
 		}
-		if b.putPiece(x, y, nowUser) {
-			fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
-			b.boardprint()
-			if haveWinner == true {
-				fmt.Printf("winner is : %d\n", nowUser)
-				return
-			}
-			changeUser(&nowUser)
-		} else {
-			fmt.Printf("bad input ,again\n")
-		}
-		fmt.Printf("user: %d  plz input :", nowUser)
 
+		if xInput == "R" {
+			CallClear()
+			if !b.regret() {
+				fmt.Println("	    ======  YOU CAN NOT REGRET ======")
+			} else {
+				changeUser(&nowUser)
+			}
+			b.boardPrint() //input R and regret
+		} else {
+			if xInput == "" || yInput == "" {
+				fmt.Println("	    ======  Bad X and Y ======")
+				continue
+			}
+			//is not regret So let input text as X and Y
+			x, err = strconv.Atoi(xInput)
+			y, err = strconv.Atoi(yInput)
+			xInput = ""
+			yInput = ""
+			if err == io.EOF {
+				break
+			}
+
+			if b.putPiece(x, y, nowUser) {
+				regretStact = append(regretStact, Piece{x, y})
+				CallClear()
+				fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
+				b.boardPrint()
+				if haveWinner == true {
+					fmt.Printf("winner is : %d\n", nowUser)
+					return
+				}
+				changeUser(&nowUser) // safe input
+			} else {
+				CallClear()
+				b.boardPrint()
+				fmt.Printf("bad input ,again\n")
+			} // bad input
+		} //input x or y
 	}
 
 	//var temp int
