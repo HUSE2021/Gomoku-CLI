@@ -37,7 +37,7 @@ func (b *Board) putPiece(x, y, userType int) bool {
 
 }
 
-func (b *Board) returnPieceTypeByPosition(x, y int) int {
+func (b *Board) returnPieceTypeByPosition(x, y int) in
 	if checkNotOverFlow(x, y) == true {
 		if b.tokens[x*15+y] != 0 {
 			if b.tokens[x*15+y] == 1 {
@@ -54,22 +54,53 @@ func (b *Board) returnPieceTypeByPosition(x, y int) int {
 
 }
 
-func (b *Board) boardprint() int {
-	fmt.Println("    0  1  2  3  4  5  6  7  8  9 10 11 12 13 14")
-	for i := 0; i < 15; i++ {
+func (b *Board) boardPrint() int {
+	fmt.Printf("   ")
+	for i := 0; i < boardSize; i++ {
+		fmt.Printf("%2d", i)
+		fmt.Printf(" ")
+	}
+	fmt.Println("")
+	for i := 0; i < boardSize; i++ {
 		fmt.Printf("%3d", i)
-		for j := 0; j < 15; j++ {
-			switch b.tokens[i*15+j] {
+		for j := 0; j < boardSize; j++ {
+			switch b.tokens[i*boardSize+j] {
 			case 0:
-				if i%4 == 3 && j%4 == 3 {
-					fmt.Printf(" _ ")
+				if i == 0 && j == 0 {
+					fmt.Printf(" ┌─")
+				} else if i == 0 && j == boardSize-1 {
+					fmt.Printf("─┐ ")
+				} else if i == boardSize-1 && j == 0 {
+					fmt.Printf(" └─")
+				} else if i == boardSize-1 && j == boa
+					fmt.Printf("─┘ ")
+				} else if j == 0 {
+					fmt.Printf(" ├─")
+				} else if j == boardSize-1 {
+					fmt.Printf("─┤ ")
+				} else if i == 0 {
+					fmt.Printf("─┬─")
+				} else if i == boardSize-1 {
+					fmt.Printf("─┴─")
 				} else {
-					fmt.Printf(" . ")
+					fmt.Printf("─┼─")
 				}
 			case 1:
-				fmt.Printf(" ○ ")
+				if j == 0 {
+					fmt.Printf(" ○─")
+				} else if j == boardSize-1 {
+					fmt.Printf("─○ ")
+				} else {
+					fmt.Printf("─○─")
+				}
 			case 2:
-				fmt.Printf(" ● ")
+				if j == 0 {
+					fmt.Printf(" ●─")
+				} else if j == boardSize {
+					fmt.Printf("─● ")
+				} else {
+					fmt.Printf("─●─")
+				}
 			default:
 				fmt.Println("Error:Unexpected Token")
 				return 1
@@ -198,10 +229,10 @@ func main() {
 			break
 		}
 		if b.putPiece(x, y, nowUser) {
-			fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
+			fmt.Printf("user: %d  put in: %d,%d\n", no
 			b.boardprint()
 			if haveWinner == true {
-				fmt.Printf("winner is : %d\n", nowUser)
+				fmt.Printf("winner is : %d\n", nowUser
 				return
 			}
 			changeUser(&nowUser)
