@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// run "go get github.com/nsf/termbox-go"
 // null 0,  user1:○ = 1　user2: ● = 2  select time =-1
 var haveWinner bool = false
 var regretStack []Piece
@@ -398,58 +399,58 @@ func changeUser(nowUser *int) {
 
 func (b *Board) getBoardSize() {
 	getBoardSize := "A"
-	fmt.Println("	    ======  Game Start  ======")
+	fmt.Println("=====  Game Start  =====")
 	for b.boardSize == 0 {
-		fmt.Println("	    ======  Select Board Size  ======\n   ======  (A)15  (B)19   ======")
+		fmt.Println("=====  Select Board Size  =====\n   =====  (A)15  (B)19   =====")
 		_, err := fmt.Scan(&getBoardSize)
 		if err != nil {
 			return
 		}
-		if getBoardSize == "A" {
+		if getBoardSize == "A" || getBoardSize == "a" {
 			b.InitialBoard(15)
-		} else if getBoardSize == "B" {
+		} else if getBoardSize == "B" || getBoardSize == "b" {
 			b.InitialBoard(19)
 		} else {
-			fmt.Println("	    ======  Bad Input, Again  ======")
+			fmt.Println("======  Bad Input, Again  ======")
 		}
 	}
 }
 
 func (b *Board) getUserName() {
 	for len(b.userName[0]) == 0 {
-		fmt.Println("	    ======  Plz input user1 name:  ======")
+		fmt.Println("=====  Plz input user1 name:  =====")
 		_, errG := fmt.Scan(&b.userName[0])
 		if errG != nil {
 			return
 		}
 	}
 	for len(b.userName[1]) == 0 {
-		fmt.Println("	    ======  Plz input user2 name:  ======")
+		fmt.Println("=====  Plz input user2 name:  =====")
 		_, err := fmt.Scan(&b.userName[1])
 		if err != nil {
 			return
 		}
 		if b.userName[0] == b.userName[1] {
-			fmt.Println("	    ======  Cannot same name with user1 !!!  ======")
+			fmt.Println("=====  Cannot same name with user1 !!!  =====")
 			b.userName[1] = ""
 		}
 	}
 	for {
-		fmt.Printf("	    ======  who is first ?  \n   ======  (A)%s  (B)%s (C)random  ============\n", b.userName[0], b.userName[1])
+		fmt.Printf("=====  who is first ?  =====\n=====  (A)%s  (B)%s (C)random  =====\n", b.userName[0], b.userName[1])
 		choice := "C"
 		_, err := fmt.Scan(&choice)
 		if err != nil {
-			fmt.Println("bad choice")
+			fmt.Println("===== bad choice =====")
 			return
 		}
-		if choice == "A" {
+		if choice == "A" || choice == "a" {
 			break
-		} else if choice == "B" {
+		} else if choice == "B" || choice == "b" {
 			var temp = b.userName[0]
 			b.userName[0] = b.userName[1]
 			b.userName[1] = temp
 			break
-		} else if choice == "C" {
+		} else if choice == "C" || choice == "c" {
 			r := rand.New(rand.NewSource(time.Now().Unix()))
 			var ra = r.Intn(2)
 			if ra == 1 {
@@ -457,10 +458,10 @@ func (b *Board) getUserName() {
 				b.userName[0] = b.userName[1]
 				b.userName[1] = temp
 			}
-			fmt.Printf("	    ======  Fist is %s  ======\n", b.userName[0])
+			fmt.Printf("=====  Fist is %s  =====\n", b.userName[0])
 			break
 		} else {
-			fmt.Println("	    ======  Bad Input, Again  ======")
+			fmt.Println("=====  Bad Input, Again  =====")
 		}
 	}
 }
@@ -521,7 +522,6 @@ keyPressListenerLoop:
 
 func main() {
 	var b Board
-	var x, y int
 	var nowUser int
 	var keyWait string
 	var nowPositionUser int
@@ -554,31 +554,51 @@ func main() {
 	for {
 		keyWait = ""
 		keyWait = b.keyGet()
+		errorMessage = ""
 		b.putPiece(nowSelect.x, nowSelect.y, nowPositionUser)
 
 		fmt.Println(regretStack)
 
 		if keyWait == "left" {
-			nowSelect.y = nowSelect.y - 1
-			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-			b.putPiece(nowSelect.x, nowSelect.y, -1)
+			if b.checkNotOverFlow(nowSelect.x, nowSelect.y-1) {
+				nowSelect.y = nowSelect.y - 1
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			} else {
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			}
+
 		}
 		if keyWait == "right" {
-			nowSelect.y = nowSelect.y + 1
-			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-			b.putPiece(nowSelect.x, nowSelect.y, -1)
-
+			if b.checkNotOverFlow(nowSelect.x, nowSelect.y+1) {
+				nowSelect.y = nowSelect.y + 1
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			} else {
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			}
 		}
 		if keyWait == "down" {
-			nowSelect.x = nowSelect.x + 1
-			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-			b.putPiece(nowSelect.x, nowSelect.y, -1)
-
+			if b.checkNotOverFlow(nowSelect.x+1, nowSelect.y) {
+				nowSelect.x = nowSelect.x + 1
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			} else {
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			}
 		}
 		if keyWait == "up" {
-			nowSelect.x = nowSelect.x - 1
-			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-			b.putPiece(nowSelect.x, nowSelect.y, -1)
+			if b.checkNotOverFlow(nowSelect.x-1, nowSelect.y) {
+				nowSelect.x = nowSelect.x - 1
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			} else {
+				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+				b.putPiece(nowSelect.x, nowSelect.y, -1)
+			}
 		}
 		if keyWait == "enter" {
 			if b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y) == 0 {
@@ -591,21 +611,22 @@ func main() {
 				if haveWinner == true {
 					CallClear()
 					b.winPrint(nowUser)
-					fmt.Printf("Congratulations!! %s", b.userName[nowUser-1])
+					println("Congratulations!! " + b.userName[nowUser-1])
 					return
 				}
 				changeUser(&nowUser)
 			} else {
-                errorMessage = "pity! There are already chess pieces on it"
+				errorMessage = "pity! There are already chess pieces on it"
 				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
 				b.putPiece(nowSelect.x, nowSelect.y, -1)
 			}
 		}
 		if keyWait == "backspace" {
 			if !b.regret() {
-				errorMessage = b.userName[nowUser-1] + "regret!"
+				errorMessage = ("	YOU CAN NOT REGRET ")
 			} else {
 				changeUser(&nowUser)
+				errorMessage = b.userName[nowUser-1] + "regret!"
 			}
 			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
 			b.putPiece(nowSelect.x, nowSelect.y, -1)
