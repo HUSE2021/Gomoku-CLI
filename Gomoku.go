@@ -407,37 +407,21 @@ func main() {
 	var x, y int
 	var nowUser int
 
-	getBoardSize := "A"
-	fmt.Println("	    ======  Game Start  ======")
-	//select board Size
-	for boardSize == 0 {
-		fmt.Println("	    ======  Select Board Size  ======\n   ======  (A)15  (B)19   ======")
-		_, err := fmt.Scan(&getBoardSize)
-		if err != nil {
-			return
-		}
-		if getBoardSize == "A" {
-			boardSize = 15
-		} else if getBoardSize == "B" {
-			boardSize = 19
-		} else {
-			fmt.Println("	    ======  Bad Input, Again  ======")
-		}
-	}
+	rand.Seed(time.Now().Unix())
+	b.getUserName()
+	b.getBoardSize()
 
-	//Initial Game
-	b.InitialBoard()
 	nowUser = 1
 	fmt.Println("	    ======  Black First ======")
 	b.boardPrint()
 	for {
-		fmt.Println(regretStact)
-		fmt.Printf("user: %d  plz input （input 'R' to regret）:", nowUser)
+		fmt.Println(regretStack)
+		fmt.Printf("user:%s  plz input （input 'R' to regret）:", b.userName[nowUser-1])
 		_, err := fmt.Scanln(&xInput, &yInput)
 		if err == io.EOF {
 			break
 		}
-
+		//regret
 		if xInput == "R" {
 			CallClear()
 			if !b.regret() {
@@ -445,7 +429,7 @@ func main() {
 			} else {
 				changeUser(&nowUser)
 			}
-			b.boardPrint() //input R and regret
+			b.boardPrint()
 		} else {
 			if xInput == "" || yInput == "" {
 				fmt.Println("	    ======  Bad X and Y ======")
@@ -461,40 +445,20 @@ func main() {
 			}
 
 			if b.putPiece(x, y, nowUser) {
-				regretStact = append(regretStact, Piece{x, y})
+				regretStack = append(regretStack, Piece{x, y})
 				CallClear()
 				fmt.Printf("user: %d  put in: %d,%d\n", nowUser, x, y)
 				b.boardPrint()
 				if haveWinner == true {
-					fmt.Printf("winner is : %d\n", nowUser)
+					b.winPrint(nowUser)
 					return
 				}
-				changeUser(&nowUser) // safe input
+				changeUser(&nowUser)
+				b.winPrint(1)
 			} else {
 				CallClear()
 				b.boardPrint()
 				fmt.Printf("bad input ,again\n")
-			} // bad input
-		} //input x or y
-	}
-
-	//var temp int
-	//temp = b.returnPieceTypeByPosition(0, 0)
-	//if temp == 0 {
-	//	fmt.Println(".")
-	//} else if temp == 1 {
-	//	fmt.Println("○")
-	//} else if temp == 2 {
-	//	fmt.Println("●")
-	//}
-	//
-	//temp = b.returnPieceTypeByPosition(0, 1)
-	//if temp == 0 {
-	//	fmt.Println(".")
-	//} else if temp == 1 {
-	//	fmt.Println("○")
-	//} else if temp == 2 {
-	//	fmt.Println("●")
-	//}
-
+			}
+		}
 }
