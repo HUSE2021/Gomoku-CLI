@@ -573,32 +573,23 @@ func main() {
 		if keyWait == "right" {
 			if b.checkNotOverFlow(nowSelect.x, nowSelect.y+1) {
 				nowSelect.y = nowSelect.y + 1
-				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-				b.putPiece(nowSelect.x, nowSelect.y, -1)
-			} else {
-				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-				b.putPiece(nowSelect.x, nowSelect.y, -1)
 			}
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
 		}
 		if keyWait == "down" {
 			if b.checkNotOverFlow(nowSelect.x+1, nowSelect.y) {
 				nowSelect.x = nowSelect.x + 1
-				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-				b.putPiece(nowSelect.x, nowSelect.y, -1)
-			} else {
-				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-				b.putPiece(nowSelect.x, nowSelect.y, -1)
 			}
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
 		}
 		if keyWait == "up" {
 			if b.checkNotOverFlow(nowSelect.x-1, nowSelect.y) {
 				nowSelect.x = nowSelect.x - 1
-				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-				b.putPiece(nowSelect.x, nowSelect.y, -1)
-			} else {
-				nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
-				b.putPiece(nowSelect.x, nowSelect.y, -1)
 			}
+			nowPositionUser = b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y)
+			b.putPiece(nowSelect.x, nowSelect.y, -1)
 		}
 		if keyWait == "enter" {
 			if b.returnPieceTypeByPosition(nowSelect.x, nowSelect.y) == 0 {
