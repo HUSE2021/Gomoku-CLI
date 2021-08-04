@@ -4,7 +4,7 @@ Gomoku CLI game by Golang
 
 # Application sheet
 - Name: Gomoku Game
-- Features: Using the CLI Gomoku game developed by Golang
+- Features: The CLI Gomoku game developed by Golang
   
   
 # About the release version:    
